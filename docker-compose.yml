@@ -1,0 +1,29 @@
+# Backend + IA together. Expects the AI repo next to this one:  ../docu-sentinel-ai
+# (or replace `build:` with an image once you publish it).
+services:
+  ai:
+    build: ../docu-sentinel-ai
+    environment:
+      MODELS_DIR: /data/models
+      AI_API_KEY: ${AI_API_KEY:-}
+    volumes:
+      - ai-models:/data/models
+    ports:
+      - "8000:8000"
+  backend:
+    build: .
+    depends_on: [ai]
+    environment:
+      PORT: 3001
+      DATA_DIR: /data
+      AI_URL: http://ai:8000
+      AI_API_KEY: ${AI_API_KEY:-}
+      API_KEY: ${API_KEY:-}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+    volumes:
+      - backend-data:/data
+    ports:
+      - "3001:3001"
+volumes:
+  ai-models:
+  backend-data:
