@@ -1,0 +1,14 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm install
+      - run: npm run typecheck
+      - run: npm test            # domain tests
+      - run: npm run test:http   # Nest + supertest + socket.io (first run of these: fix anything that fails, see AI_CONTEXT.md)
+      - run: npm run build
