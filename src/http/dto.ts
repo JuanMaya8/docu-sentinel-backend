@@ -44,10 +44,12 @@ export class CreateBaselineDoc {
   @ApiPropertyOptional() schemaSignature?: string;
   @ApiPropertyOptional({ minimum: 0.0001, maximum: 0.25 }) contamination?: number;
   @ApiPropertyOptional() seed?: number;
+  @ApiPropertyOptional({ minimum: 0.5, maximum: 0.99, description: 'Puntaje mínimo para marcar una fila (el frontend usa 0,65/0,60/0,55 según la sensibilidad)' }) thresholdFloor?: number;
 }
 
 export class ScoreBaselineDoc {
   @ApiProperty({ example: [[3, 120.5]] }) matrix!: Array<Array<number | null>>;
   @ApiPropertyOptional({ enum: ['flagged', 'all', 'none'] }) explain?: string;
   @ApiPropertyOptional({ minimum: 1, maximum: 10 }) topK?: number;
+  @ApiPropertyOptional({ description: 'Si se envía y la línea base tiene firma, deben coincidir (si no: 422 SCHEMA_MISMATCH)' }) schemaSignature?: string;
 }
