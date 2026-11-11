@@ -105,6 +105,10 @@ export interface BaselineDto {
   schemaSignature?: string;
   /** minimum anomaly score the AI uses to flag a row (0.5..0.99) */
   thresholdFloor?: number;
+  /** 1 on creation, +1 on every retrain */
+  version?: number;
+  /** user that created it (only when authentication is enabled) */
+  ownerId?: string;
 }
 
 export interface CreateBaselineDto {
