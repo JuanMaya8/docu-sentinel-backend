@@ -8,6 +8,10 @@ export interface AppConfig {
   corsOrigins: string[];
   bodyLimitMb: number;
   throttleLimit: number;
+  /** analyses older than this many days are deleted automatically; 0 = keep forever */
+  retentionDays: number;
+  /** how often the retention job runs */
+  retentionIntervalMs: number;
   version: string;
 }
 
