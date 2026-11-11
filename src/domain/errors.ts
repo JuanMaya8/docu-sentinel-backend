@@ -32,6 +32,18 @@ export class AiUnavailableError extends DomainError {
   }
 }
 
+export class SchemaMismatchError extends DomainError {
+  constructor(expected: string, received: string) {
+    super(
+      422,
+      'SCHEMA_MISMATCH',
+      `El archivo no tiene las mismas columnas que la línea base (firma esperada «${expected}», recibida «${received}»). ` +
+        'Entrena una línea base nueva con este formato o usa el modelo local.',
+    );
+    this.name = 'SchemaMismatchError';
+  }
+}
+
 export class UnauthorizedError extends DomainError {
   constructor() {
     super(401, 'UNAUTHORIZED', 'Falta o es incorrecta la cabecera X-API-Key.');
