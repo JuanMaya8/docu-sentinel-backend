@@ -13,6 +13,8 @@ export interface AnalysisRepository {
   allFindings(id: string): Promise<FindingDto[]>;
   fileName(id: string): Promise<string>;
   remove(id: string): Promise<void>;
+  /** ids of analyses created strictly before `cutoffIso` (ISO-8601) */
+  idsCreatedBefore(cutoffIso: string): Promise<string[]>;
 }
 
 const ID_RE = /^an_[0-9a-f]{12}$/;
