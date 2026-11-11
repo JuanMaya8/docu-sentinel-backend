@@ -18,7 +18,7 @@ test('save: column-level findings (recordIndex null) are accepted', () => {
 test('save: errors are listed in Spanish', () => {
   assert.throws(() => validateSaveAnalysis(null), ValidationError);
   try {
-    validateSaveAnalysis({ ...saveBody(), format: 'xlsx', rows: -1, findings: [{ ...finding(), risk: 'extreme', score: 500 }] });
+    validateSaveAnalysis({ ...saveBody(), format: 'docx', rows: -1, findings: [{ ...finding(), risk: 'extreme', score: 500 }] });
     assert.fail('should throw');
   } catch (e) {
     assert.ok(e instanceof ValidationError);
