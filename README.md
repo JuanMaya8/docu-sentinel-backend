@@ -9,9 +9,12 @@ Qué hace:
 * **Tiempo real**: avisa por socket.io (`/realtime`) cuando se guarda o borra un reporte o una línea base.
 * Si la IA no responde, devuelve `503 AI_UNAVAILABLE` y el frontend cae a su modelo local.
 * **Retención opcional** (`RETENTION_DAYS`) y `X-Request-ID` + log JSON por petición.
+* **PostgreSQL** (`DATABASE_URL`) o archivos JSON; **cuentas de usuario** (`JWT_SECRET`) con reportes y líneas base
+  privados; **reentrenar** líneas base con versión; exportar **JSON**; **`/metrics`** Prometheus; compresión gzip;
+  **webhook** opcional para reportes críticos.
 
-> **Estado: v0.2.0 — funcional y verificado** (32 pruebas de dominio + 8 HTTP/WebSocket, integración real con la IA y
-> E2E desde el frontend). Lee *Qué está hecho y qué no* y `AI_CONTEXT.md`.
+> **Estado: v0.3.0 — funcional, verificado y listo para Render** (47 pruebas de dominio, 14 HTTP/WebSocket y 17 sobre
+> PostgreSQL real; E2E desde el frontend con cuentas y PostgreSQL). Despliegue paso a paso: [`DEPLOY.md`](DEPLOY.md).
 
 ## Cómo ejecutarlo
 
