@@ -1,29 +1,45 @@
-# Backend + IA together. Expects the AI repo next to this one:  ../docu-sentinel-ai
-# (or replace `build:` with an image once you publish it).
+# Full stack for local use: PostgreSQL + AI + backend. Expects the AI repo next to this one: ../docu-sentinel-ai
+#   docker compose up --build            -> backend http://localhost:3001/api/v1 · AI http://localhost:8000
+# Accounts are off by default; set JWT_SECRET (e.g. in a .env next to this file) to turn them on.
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: docu
+      POSTGRES_PASSWORD: docu
+      POSTGRES_DB: docu_sentinel
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docu -d docu_sentinel"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
   ai:
     build: ../docu-sentinel-ai
+    depends_on:
+      db: { condition: service_healthy }
     environment:
-      MODELS_DIR: /data/models
+      DATABASE_URL: postgresql://docu:docu@db:5432/docu_sentinel
       AI_API_KEY: ${AI_API_KEY:-}
-    volumes:
-      - ai-models:/data/models
+      MODEL_TTL_DAYS: ${MODEL_TTL_DAYS:-0}
     ports:
       - "8000:8000"
   backend:
     build: .
-    depends_on: [ai]
+    depends_on:
+      db: { condition: service_healthy }
+      ai: { condition: service_started }
     environment:
       PORT: 3001
-      DATA_DIR: /data
+      DATABASE_URL: postgresql://docu:docu@db:5432/docu_sentinel
       AI_URL: http://ai:8000
       AI_API_KEY: ${AI_API_KEY:-}
       API_KEY: ${API_KEY:-}
+      JWT_SECRET: ${JWT_SECRET:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
-    volumes:
-      - backend-data:/data
+      RETENTION_DAYS: ${RETENTION_DAYS:-0}
     ports:
       - "3001:3001"
 volumes:
-  ai-models:
-  backend-data:
+  pg-data:
