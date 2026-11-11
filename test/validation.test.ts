@@ -60,6 +60,16 @@ test('baseline: nulls are allowed in the matrix', () => {
   assert.doesNotThrow(() => validateCreateBaseline({ name: 'x', columns: ['a', 'b'], matrix: m }));
 });
 
+test('baseline: thresholdFloor range and score schemaSignature', () => {
+  const ok = validateCreateBaseline({ name: 'x', columns: ['a'], matrix: Array.from({ length: 20 }, (_, i) => [i]), thresholdFloor: 0.6 });
+  assert.equal(ok.thresholdFloor, 0.6);
+  assert.throws(() => validateCreateBaseline({ name: 'x', columns: ['a'], matrix: Array.from({ length: 20 }, (_, i) => [i]), thresholdFloor: 0.4 }), /thresholdFloor/);
+  assert.throws(() => validateCreateBaseline({ name: 'x', columns: ['a'], matrix: Array.from({ length: 20 }, (_, i) => [i]), thresholdFloor: 'alto' }), /thresholdFloor/);
+  const s = validateScoreBaseline({ matrix: [[1]], schemaSignature: 'abc' }, 1);
+  assert.equal(s.schemaSignature, 'abc');
+  assert.throws(() => validateScoreBaseline({ matrix: [[1]], schemaSignature: 42 }, 1), /schemaSignature/);
+});
+
 test('score body: width must match the baseline', () => {
   assert.equal(validateScoreBaseline({ matrix: matrix(3, 2) }, 2).matrix.length, 3);
   assert.throws(() => validateScoreBaseline({ matrix: matrix(3, 3) }, 2), /fila 0/);
