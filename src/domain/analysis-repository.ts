@@ -101,13 +101,13 @@ export class BlobAnalysisRepository implements AnalysisRepository {
     return list;
   }
 
-  async findings(id: string, query: FindingsQuery): Promise<Page<FindingDto>> {
-    return queryFindings(await this.allFindings(id), query);
+  async findings(id: string, query: FindingsQuery, ownerId?: string): Promise<Page<FindingDto>> {
+    return queryFindings(await this.allFindings(id, ownerId), query);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, ownerId?: string): Promise<void> {
     const index = await this.load();
-    if (!index.has(id)) throw new NotFoundError('un análisis', id);
+    await this.get(id, ownerId);
     index.delete(id);
     this.cache.delete(id);
     await this.store.remove(detailKey(id));
