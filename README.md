@@ -8,8 +8,10 @@ Qué hace:
 * **Líneas base históricas**: recibe una matriz numérica de un archivo histórico, la entrena en `docu-sentinel-ai` y luego puntúa archivos nuevos contra ella.
 * **Tiempo real**: avisa por socket.io (`/realtime`) cuando se guarda o borra un reporte o una línea base.
 * Si la IA no responde, devuelve `503 AI_UNAVAILABLE` y el frontend cae a su modelo local.
+* **Retención opcional** (`RETENTION_DAYS`) y `X-Request-ID` + log JSON por petición.
 
-> **Estado: avance funcional (v0.1.0)**, no el proyecto terminado. Lee *Qué está hecho y qué no* y `AI_CONTEXT.md`.
+> **Estado: v0.2.0 — funcional y verificado** (32 pruebas de dominio + 8 HTTP/WebSocket, integración real con la IA y
+> E2E desde el frontend). Lee *Qué está hecho y qué no* y `AI_CONTEXT.md`.
 
 ## Cómo ejecutarlo
 
