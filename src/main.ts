@@ -12,6 +12,7 @@ async function bootstrap(): Promise<void> {
   log.log(`Swagger: http://localhost:${config.port}/docs`);
   log.log(`IA:      ${config.aiUrl}  ·  datos: ${config.dataDir}  ·  API key: ${config.apiKey ? 'activada' : 'desactivada'}`);
   log.log(`Retención: ${config.retentionDays > 0 ? `${config.retentionDays} días` : 'desactivada (los reportes se guardan sin límite)'}`);
+  log.log(`Almacenamiento: ${config.databaseUrl ? 'PostgreSQL' : `archivos JSON en ${config.dataDir}`}  ·  cuentas: ${config.jwtSecret ? 'activadas' : 'desactivadas'}  ·  métricas: /metrics`);
 }
 
 void bootstrap();
