@@ -120,13 +120,6 @@ No aplica a este repo (es una API). El patrón del sistema —SSG + CSR + SSR po
 explica los pasos (incluido Vercel para el frontend y CORS). Localmente, `docker compose up --build` levanta
 PostgreSQL + IA + backend. Variables documentadas en `.env.example`.
 
-## Nombre de repositorio sugerido
-`docu-sentinel-backend`
 
-```bash
-git init -b main && git add . && git commit -m "feat: avance inicial del backend (historial, líneas base, tiempo real)"
-git remote add origin git@github.com:<tu-usuario>/docu-sentinel-backend.git && git push -u origin main
-```
-
-## Notas para una IA generadora de código
-Lee **`AI_CONTEXT.md`** primero: dice qué está terminado, qué falta para el 100 %, convenciones (código en inglés, mensajes al usuario en español), comandos de verificación y trampas conocidas.
+## Contexto técnico
+**`AI_CONTEXT.md`** resume el estado del proyecto: dice qué está terminado, qué falta para el 100 %, convenciones (código en inglés, mensajes al usuario en español), comandos de verificación y trampas conocidas.
