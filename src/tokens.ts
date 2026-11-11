@@ -5,4 +5,7 @@ export const TOKENS = {
   ANALYSES: 'DS_ANALYSES',
   BASELINES: 'DS_BASELINES',
   AI: 'DS_AI',
+  AUTH: 'DS_AUTH',
+  METRICS: 'DS_METRICS',
+  DB: 'DS_DB',
 } as const;
