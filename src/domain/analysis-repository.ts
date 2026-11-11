@@ -56,11 +56,11 @@ export class BlobAnalysisRepository implements AnalysisRepository {
     return this.loading;
   }
 
-  async save(dto: SaveAnalysisDto): Promise<AnalysisSummary> {
+  async save(dto: SaveAnalysisDto, ownerId?: string): Promise<AnalysisSummary> {
     const index = await this.load();
     const id = `an_${randomBytes(6).toString('hex')}`;
     const summary = buildSummary(id, new Date().toISOString(), dto);
-    const detail = buildDetail(summary, dto);
+    const detail: AnalysisDetail = { ...buildDetail(summary, dto), ...(ownerId ? { ownerId } : {}) };
     const sorted = sortByScoreDesc(dto.findings);
     await this.store.write(findingsKey(id), JSON.stringify(sorted));
     await this.store.write(detailKey(id), JSON.stringify(detail));
