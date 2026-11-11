@@ -5,14 +5,18 @@ import { queryFindings, type FindingsQuery } from './findings-query';
 import { buildDetail, buildSummary, sortByScoreDesc } from './summary';
 import type { AnalysisDetail, AnalysisSummary, FindingDto, Page, SaveAnalysisDto } from './types';
 
+/**
+ * `ownerId` (optional everywhere): when given, only analyses of that owner are visible (others raise NotFoundError);
+ * when omitted (authentication disabled) every analysis is visible.
+ */
 export interface AnalysisRepository {
-  save(dto: SaveAnalysisDto): Promise<AnalysisSummary>;
-  list(limit: number, offset: number): Promise<Page<AnalysisSummary>>;
-  get(id: string): Promise<AnalysisDetail>;
-  findings(id: string, query: FindingsQuery): Promise<Page<FindingDto>>;
-  allFindings(id: string): Promise<FindingDto[]>;
-  fileName(id: string): Promise<string>;
-  remove(id: string): Promise<void>;
+  save(dto: SaveAnalysisDto, ownerId?: string): Promise<AnalysisSummary>;
+  list(limit: number, offset: number, ownerId?: string): Promise<Page<AnalysisSummary>>;
+  get(id: string, ownerId?: string): Promise<AnalysisDetail>;
+  findings(id: string, query: FindingsQuery, ownerId?: string): Promise<Page<FindingDto>>;
+  allFindings(id: string, ownerId?: string): Promise<FindingDto[]>;
+  fileName(id: string, ownerId?: string): Promise<string>;
+  remove(id: string, ownerId?: string): Promise<void>;
   /** ids of analyses created strictly before `cutoffIso` (ISO-8601) */
   idsCreatedBefore(cutoffIso: string): Promise<string[]>;
 }
