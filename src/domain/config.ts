@@ -12,6 +12,20 @@ export interface AppConfig {
   retentionDays: number;
   /** how often the retention job runs */
   retentionIntervalMs: number;
+  /** PostgreSQL connection string; empty => JSON files in dataDir */
+  databaseUrl?: string;
+  /** use TLS for Postgres (external connection strings of managed databases) */
+  databaseSsl: boolean;
+  /** HS256 secret; when set, user accounts are enabled and /analyses + /baselines require a Bearer token */
+  jwtSecret?: string;
+  jwtTtlHours: number;
+  allowRegistration: boolean;
+  /** POSTed (JSON) when a saved analysis has findings at or above `webhookMinRisk` */
+  webhookUrl?: string;
+  webhookSecret?: string;
+  webhookMinRisk: 'low' | 'medium' | 'high' | 'critical';
+  /** when set, GET /metrics needs `Authorization: Bearer <token>` */
+  metricsToken?: string;
   version: string;
 }
 
