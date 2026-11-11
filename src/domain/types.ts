@@ -101,6 +101,8 @@ export interface BaselineDto {
   threshold: number;
   trainedAt: string;
   schemaSignature?: string;
+  /** minimum anomaly score the AI uses to flag a row (0.5..0.99) */
+  thresholdFloor?: number;
 }
 
 export interface CreateBaselineDto {
