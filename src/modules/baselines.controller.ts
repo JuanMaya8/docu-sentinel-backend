@@ -1,11 +1,13 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import type { AiScoreResponse, BaselineDto, BaselineService } from '../domain';
-import { CreateBaselineDoc, ScoreBaselineDoc } from '../http/dto';
+import { Owner } from '../http/auth.guard';
+import { CreateBaselineDoc, RetrainBaselineDoc, ScoreBaselineDoc } from '../http/dto';
 import { TOKENS } from '../tokens';
 
 @ApiTags('baselines')
 @ApiSecurity('api-key')
+@ApiBearerAuth()
 @Controller('baselines')
 export class BaselinesController {
   constructor(@Inject(TOKENS.BASELINES) private readonly baselines: BaselineService) {}
