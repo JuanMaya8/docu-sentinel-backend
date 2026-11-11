@@ -55,8 +55,9 @@ src/
 │   ├── analyses.controller.ts    /analyses…     historial
 │   ├── baselines.controller.ts   /baselines…    líneas base
 │   ├── health.controller.ts      /health        estado + ¿la IA responde?
-│   └── realtime.gateway.ts       socket.io /realtime
-├── http/ api-key.guard.ts · exceptions.filter.ts · dto.ts (solo documentación Swagger)
+│   ├── realtime.gateway.ts       socket.io /realtime
+│   └── retention.scheduler.ts    borra reportes con más de RETENTION_DAYS días (temporizador simple)
+├── http/ api-key.guard.ts · exceptions.filter.ts · request-id.middleware.ts · dto.ts (solo documentación Swagger)
 └── domain/   ← TypeScript puro, sin Nest. Es lo que se prueba con `npm test`
     ├── validation.ts       Validación manual de cada cuerpo (mensajes en español)
     ├── analysis-repository.ts + blob-store.ts   Persistencia (archivos JSON, atómica) tras una interfaz
