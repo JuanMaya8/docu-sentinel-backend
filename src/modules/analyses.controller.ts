@@ -15,6 +15,7 @@ function pageParam(raw: unknown, name: string, def: number, min: number, max: nu
 
 @ApiTags('analyses')
 @ApiSecurity('api-key')
+@ApiBearerAuth()
 @Controller('analyses')
 export class AnalysesController {
   constructor(@Inject(TOKENS.ANALYSES) private readonly analyses: AnalysisService) {}
