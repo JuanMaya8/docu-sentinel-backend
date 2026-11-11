@@ -12,7 +12,8 @@
     "start:dev": "nest start --watch",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "tsx --test test/*.test.ts",
-    "test:http": "tsx --test test/http/*.test.ts"
+    "test:http": "tsx --test test/http/*.test.ts",
+    "test:pg": "tsx --test test/pg.test.ts test/http/auth.e2e.test.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.0",
