@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import type { AiClient } from './ai-client';
 import type { BlobStore } from './blob-store';
-import { NotFoundError, SchemaMismatchError } from './errors';
+import { DomainError, NotFoundError, SchemaMismatchError } from './errors';
 import type { EventBus } from './events';
 import { validateCreateBaseline, validateScoreBaseline } from './validation';
 import type { AiScoreResponse, BaselineDto } from './types';
