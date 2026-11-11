@@ -23,21 +23,22 @@ export class AnalysesController {
   @Post()
   @ApiOperation({ summary: 'Guarda el reporte de un análisis (solo resultados, nunca el archivo)' })
   @ApiBody({ type: SaveAnalysisDoc })
-  save(@Body() body: unknown): Promise<AnalysisSummary> {
-    return this.analyses.save(body);
+  save(@Body() body: unknown, @Owner() owner?: string): Promise<AnalysisSummary> {
+    return this.analyses.save(body, owner);
   }
 
   @Get()
   @ApiOperation({ summary: 'Lista los reportes, el más reciente primero' })
   @ApiQuery({ name: 'limit', required: false }) @ApiQuery({ name: 'offset', required: false })
-  list(@Query('limit') limit?: string, @Query('offset') offset?: string): Promise<Page<AnalysisSummary>> {
-    return this.analyses.list(pageParam(limit, 'limit', 20, 1, 200), pageParam(offset, 'offset', 0, 0, 10_000_000));
+  list(@Query('limit') limit?: string, @Query('offset') offset?: string, @Owner() owner?: string): Promise<Page<AnalysisSummary>> {
+    return this.analyses.list(pageParam(limit, 'limit', 20, 1, 200), pageParam(offset, 'offset', 0, 0, 10_000_000), owner);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Resumen y columnas de un reporte' })
-  get(@Param('id') id: string): Promise<AnalysisDetail> {
-    return this.analyses.get(id);
+  async get(@Param('id') id: string, @Owner() owner?: string): Promise<AnalysisDetail> {
+    const { ownerId: _o, ...detail } = await this.analyses.get(id, owner);
+    return detail;
   }
 
   @Get(':id/findings')
