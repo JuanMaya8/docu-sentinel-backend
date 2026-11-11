@@ -9,6 +9,7 @@ import { AnalysesController } from './modules/analyses.controller';
 import { BaselinesController } from './modules/baselines.controller';
 import { HealthController } from './modules/health.controller';
 import { RealtimeGateway } from './modules/realtime.gateway';
+import { RetentionScheduler } from './modules/retention.scheduler';
 
 @Module({})
 export class AppModule {
