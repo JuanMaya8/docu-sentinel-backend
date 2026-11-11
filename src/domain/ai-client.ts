@@ -23,6 +23,7 @@ export interface TrainBody {
   schema_signature?: string;
   contamination?: number;
   seed?: number;
+  threshold_floor?: number;
 }
 
 export interface ScoreBody {
