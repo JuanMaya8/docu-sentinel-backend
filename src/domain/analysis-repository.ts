@@ -108,6 +108,10 @@ export class BlobAnalysisRepository implements AnalysisRepository {
     await this.store.remove(findingsKey(id));
   }
 
+  async idsCreatedBefore(cutoffIso: string): Promise<string[]> {
+    return [...(await this.load()).values()].filter((d) => d.createdAt < cutoffIso).map((d) => d.id);
+  }
+
   private remember(id: string, list: FindingDto[]): void {
     this.cache.set(id, list);
     while (this.cache.size > this.cacheSize) this.cache.delete(this.cache.keys().next().value as string);
