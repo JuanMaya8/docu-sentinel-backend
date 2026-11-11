@@ -65,6 +65,7 @@ export class BaselineService {
       threshold: info.threshold,
       trainedAt: info.trained_at,
       ...(dto.schemaSignature ? { schemaSignature: dto.schemaSignature } : {}),
+      ...(info.threshold_floor !== undefined ? { thresholdFloor: info.threshold_floor } : dto.thresholdFloor !== undefined ? { thresholdFloor: dto.thresholdFloor } : {}),
     };
     try {
       await this.mutate(async (list) => void list.push(baseline));
