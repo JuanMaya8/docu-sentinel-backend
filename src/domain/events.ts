@@ -7,7 +7,8 @@ export interface EventMap {
   'baseline.deleted': { id: string };
 }
 export type EventName = keyof EventMap;
-export type Listener = <K extends EventName>(event: K, payload: EventMap[K]) => void;
+/** `ownerId` is set when authentication is enabled, so the gateway only pushes the event to that user. */
+export type Listener = <K extends EventName>(event: K, payload: EventMap[K], ownerId?: string) => void;
 
 /** Tiny typed pub/sub. The socket.io gateway subscribes; domain services publish. */
 export class EventBus {
