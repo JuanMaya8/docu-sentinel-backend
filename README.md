@@ -109,7 +109,7 @@ No aplica a este repo (es una API). El patrón del sistema —SSG + CSR + SSR po
 * Sin usuarios: todos los reportes son visibles para quien llegue a la API.
 
 ## Despliegue (más adelante)
-Imagen Docker lista (`Dockerfile`, usuario no-root, volumen `/data`). Variables: `PORT`, `API_KEY`, `AI_URL`, `AI_API_KEY`, `DATA_DIR` (volumen persistente), `CORS_ORIGINS` (dominio del frontend), `BODY_LIMIT_MB`, `THROTTLE_LIMIT`.
+Imagen Docker lista (`Dockerfile`, usuario no-root, volumen `/data`). Variables: `PORT`, `API_KEY`, `AI_URL`, `AI_API_KEY`, `DATA_DIR` (volumen persistente), `CORS_ORIGINS` (dominio del frontend), `BODY_LIMIT_MB`, `THROTTLE_LIMIT`, `RETENTION_DAYS`, `RETENTION_INTERVAL_MS`.
 Opciones simples: Render, Railway, Fly.io o Cloud Run con un volumen (o migrar a Postgres gestionado). Despliega primero la IA y apunta `AI_URL` a ella.
 
 ## Nombre de repositorio sugerido
