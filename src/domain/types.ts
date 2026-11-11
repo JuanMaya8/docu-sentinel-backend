@@ -2,7 +2,7 @@
 export const RISK_LEVELS = ['low', 'medium', 'high', 'critical'] as const;
 export type RiskLevel = (typeof RISK_LEVELS)[number];
 
-export const FILE_FORMATS = ['csv', 'tsv', 'json', 'ndjson', 'pdf'] as const;
+export const FILE_FORMATS = ['csv', 'tsv', 'json', 'ndjson', 'pdf', 'xlsx'] as const;
 export type FileFormat = (typeof FILE_FORMATS)[number];
 
 export const PROCESSING_MODES = ['main', 'worker', 'pool'] as const;
