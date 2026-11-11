@@ -34,6 +34,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     const n = Number(v);
     return v !== undefined && v !== '' && Number.isFinite(n) && n > 0 ? n : d;
   };
+  const bool = (v: string | undefined, d: boolean): boolean => (v === undefined || v === '' ? d : /^(1|true|yes|on)$/i.test(v));
   return {
     port: int(env.PORT, 3001),
     apiKey: env.API_KEY || undefined,
