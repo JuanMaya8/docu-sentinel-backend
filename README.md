@@ -86,7 +86,7 @@ El contrato exacto (tipos, parámetros, errores y eventos) está en [`docs/CONTR
 | GET | `/analyses/:id/export.csv` | CSV: Registro, Tipo de anomalía, Nivel de riesgo, Campo afectado, Explicación |
 | DELETE | `/analyses/:id` | 204 |
 | POST/GET/DELETE | `/baselines` · `/baselines/:id` | Líneas base |
-| POST | `/baselines/:id/score` | Puntúa filas nuevas (las columnas las pone el backend) |
+| POST | `/baselines/:id/score` | Puntúa filas nuevas (las columnas las pone el backend; `schemaSignature` opcional → `422 SCHEMA_MISMATCH` si no coincide) |
 | GET | `/health` | `{ status, ai: "up"|"down", version }` |
 
 Errores: `{ "statusCode": 400, "code": "VALIDATION_ERROR", "message": "…en español…" }`. Códigos: `VALIDATION_ERROR`, `NOT_FOUND`, `UNAUTHORIZED`, `AI_UNAVAILABLE`, `PAYLOAD_TOO_LARGE`, `INVALID_JSON`, `TOO_MANY_REQUESTS`, `INTERNAL_ERROR` y los de la IA (`INVALID_TRAINING_DATA`, `SCHEMA_MISMATCH`, …).
