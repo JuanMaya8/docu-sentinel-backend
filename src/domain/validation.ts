@@ -222,6 +222,10 @@ export function validateScoreBaseline(input: unknown, width: number): ScoreBasel
   const matrix = readMatrix(input, c, width);
   const explain = input.explain === undefined ? undefined : c.oneOf(input, 'explain', ['flagged', 'all', 'none'] as const);
   const topK = c.num(input, 'topK', { min: 1, max: 10, int: true, optional: true });
+  const schemaSignature = c.str(input, 'schemaSignature', { max: 200, optional: true });
   c.done();
-  return { matrix, ...(explain ? { explain } : {}), ...(topK !== undefined ? { topK } : {}) };
+  return {
+    matrix, ...(explain ? { explain } : {}), ...(topK !== undefined ? { topK } : {}),
+    ...(schemaSignature !== undefined ? { schemaSignature } : {}),
+  };
 }
