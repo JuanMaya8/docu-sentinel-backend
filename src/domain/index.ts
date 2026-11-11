@@ -12,3 +12,7 @@ export * from './analysis-service';
 export * from './ai-client';
 export * from './baseline-service';
 export * from './config';
+export * from './auth';
+export * from './metrics';
+export * from './webhook';
+export * from './pg';
