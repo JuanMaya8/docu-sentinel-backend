@@ -89,6 +89,10 @@ export class BaselineService {
   async score(id: string, input: unknown): Promise<AiScoreResponse> {
     const b = await this.get(id);
     const dto = validateScoreBaseline(input, b.columns.length);
+    // checked BEFORE calling the AI: a different feature layout would give meaningless scores
+    if (dto.schemaSignature && b.schemaSignature && dto.schemaSignature !== b.schemaSignature) {
+      throw new SchemaMismatchError(b.schemaSignature, dto.schemaSignature);
+    }
     return this.ai.score(b.aiModelId, { columns: b.columns, kinds: b.kinds, matrix: dto.matrix, explain: dto.explain, top_k: dto.topK });
   }
 }
