@@ -84,6 +84,8 @@ export interface AnalysisDetail extends AnalysisSummary {
   sensitivity: Sensitivity;
   mlMode: MlMode;
   baselineId?: string;
+  /** user that saved it (only when authentication is enabled) */
+  ownerId?: string;
 }
 
 export interface Page<T> {
