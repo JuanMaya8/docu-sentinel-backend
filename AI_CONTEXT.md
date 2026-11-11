@@ -3,7 +3,23 @@
 > Para la IA generadora de código que continuará este repo. Lee `README.md` y `docs/CONTRACT.md` (idéntico en los 3 repos: frontend `docu-sentinel-frontend`, este, y `docu-sentinel-ai`).
 > Reglas: **código, identificadores y commits en inglés; mensajes que ve el usuario (errores, CSV) en español**.
 
-## 1. Dónde quedó el trabajo (≈ 75 % del repo)
+## 0. Actualización (v0.2.0) — leer primero
+
+Todo lo marcado como «NO ejecutado» abajo **ya se ejecutó y funciona** en Windows (Node 22):
+`npm run typecheck` limpio · `npm test` → 32 OK · `npm run test:http` → 8 OK · `npm run build` OK · Swagger 200 en `/docs`.
+Integración real verificada con `docu-sentinel-ai` (uvicorn) y E2E con el frontend (`npm run test:e2e` allí).
+
+Nuevo en v0.2.0:
+* `thresholdFloor` (0.5–0.99) en `POST /baselines` → se envía a la IA como `threshold_floor` y se guarda en `BaselineDto`.
+* `schemaSignature` opcional en `POST /baselines/:id/score`; si no coincide con la de la línea base →
+  `422 SCHEMA_MISMATCH` (`SchemaMismatchError`) **sin** llamar a la IA.
+* Retención: `RETENTION_DAYS` / `RETENTION_INTERVAL_MS` → `AnalysisService.purgeOlderThan` (dominio, probado) +
+  `modules/retention.scheduler.ts` (temporizador, sin `@nestjs/schedule`). Repositorio: `idsCreatedBefore(cutoff)`.
+* `http/request-id.middleware.ts`: `X-Request-ID` (reutiliza uno seguro o crea uno) + una línea JSON por petición
+  (`buildApp(config, { logRequests:false })` en pruebas).
+* Tipos de la IA: `AiContribution.kind` admite `'coherence'` con `expected`.
+
+## 1. Dónde quedó el trabajo (histórico v0.1 — ≈ 75 % del repo)
 
 | Área | Estado | Cómo se comprobó |
 |---|---|---|
