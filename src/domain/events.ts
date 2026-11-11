@@ -17,10 +17,10 @@ export class EventBus {
     this.listeners.add(l);
     return () => this.listeners.delete(l);
   }
-  publish<K extends EventName>(event: K, payload: EventMap[K]): void {
+  publish<K extends EventName>(event: K, payload: EventMap[K], ownerId?: string): void {
     for (const l of this.listeners) {
       try {
-        l(event, payload);
+        l(event, payload, ownerId);
       } catch {
         /* a broken listener must not break a request */
       }
