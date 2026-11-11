@@ -50,6 +50,7 @@ export async function buildApp(config: AppConfig, options: BuildOptions = {}): P
     .setDescription('Historial de reportes de anomalías, líneas base históricas (delegadas a la IA) y eventos en tiempo real (socket.io, namespace /realtime).')
     .setVersion(config.version)
     .addApiKey({ type: 'apiKey', name: 'X-API-Key', in: 'header' }, 'api-key')
+    .addBearerAuth()
     .build();
     SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, doc));
   }
