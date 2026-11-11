@@ -1,5 +1,5 @@
-import { Inject, Logger } from '@nestjs/common';
-import { OnGatewayInit, OnModuleDestroy, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Inject, Logger, OnModuleDestroy } from '@nestjs/common';
+import { OnGatewayInit, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import type { Server } from 'socket.io';
 import { loadConfig, type EventBus } from '../domain';
 import { TOKENS } from '../tokens';
