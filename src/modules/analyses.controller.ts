@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Query, Res } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { ValidationError, type AnalysisService, type AnalysisSummary, type AnalysisDetail, type FindingDto, type Page } from '../domain';
+import { Owner } from '../http/auth.guard';
 import { SaveAnalysisDoc } from '../http/dto';
 import { TOKENS } from '../tokens';
 
