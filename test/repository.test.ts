@@ -121,6 +121,30 @@ test('CSV export: Spanish labels, escaping and formula-injection guard', () => {
   assert.match(csv, /Columna completa,Desviación de la ley de Benford,Bajo,,"'=HYPERLINK\(""http:\/\/malo""\)"/);
 });
 
+test('retention: purgeOlderThan deletes only old analyses and publishes analysis.deleted', async () => {
+  const store = new MemoryBlobStore();
+  const repo = new BlobAnalysisRepository(store);
+  const bus = new EventBus();
+  const events: Array<{ e: string; p: unknown }> = [];
+  bus.subscribe((e, p) => events.push({ e, p }));
+  const svc = new AnalysisService(repo, bus);
+  const old = await svc.save(saveBody({ fileName: 'viejo.csv' }));
+  const fresh = await svc.save(saveBody({ fileName: 'nuevo.csv' }));
+  // make "old" 40 days old by rewriting its stored detail
+  const detail = JSON.parse((await store.read(`${old.id}.detail.json`))!);
+  detail.createdAt = new Date(Date.now() - 40 * 86_400_000).toISOString();
+  await store.write(`${old.id}.detail.json`, JSON.stringify(detail));
+  const repo2 = new BlobAnalysisRepository(store);
+  const svc2 = new AnalysisService(repo2, bus);
+  assert.deepEqual(await svc2.purgeOlderThan(0), [], '0 days = retention disabled');
+  const removed = await svc2.purgeOlderThan(30);
+  assert.deepEqual(removed, [old.id]);
+  assert.deepEqual((await svc2.list(10, 0)).items.map((x) => x.id), [fresh.id]);
+  assert.equal(await store.read(`${old.id}.findings.json`), null);
+  assert.ok(events.some((x) => x.e === 'analysis.deleted' && (x.p as { id: string }).id === old.id));
+  assert.deepEqual(await svc2.purgeOlderThan(30), [], 'idempotent');
+});
+
 test('queryFindings is pure and does not mutate its input', () => {
   const list = [finding({ score: 1 }), finding({ score: 9 })];
   queryFindings(list, q({ sort: 'score:desc' }));
