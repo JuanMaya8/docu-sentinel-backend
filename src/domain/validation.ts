@@ -205,8 +205,15 @@ export function validateCreateBaseline(input: unknown): CreateBaselineDto {
   const schemaSignature = c.str(input, 'schemaSignature', { max: 200, optional: true });
   const contamination = c.num(input, 'contamination', { min: 0.0001, max: 0.25, optional: true });
   const seed = c.num(input, 'seed', { int: true, optional: true });
+  const thresholdFloor = c.num(input, 'thresholdFloor', { min: 0.5, max: 0.99, optional: true });
   c.done();
-  return { name: name!, columns, ...(kinds ? { kinds } : {}), matrix, ...(schemaSignature !== undefined ? { schemaSignature } : {}), ...(contamination !== undefined ? { contamination } : {}), ...(seed !== undefined ? { seed } : {}) };
+  return {
+    name: name!, columns, ...(kinds ? { kinds } : {}), matrix,
+    ...(schemaSignature !== undefined ? { schemaSignature } : {}),
+    ...(contamination !== undefined ? { contamination } : {}),
+    ...(seed !== undefined ? { seed } : {}),
+    ...(thresholdFloor !== undefined ? { thresholdFloor } : {}),
+  };
 }
 
 export function validateScoreBaseline(input: unknown, width: number): ScoreBaselineDto {
