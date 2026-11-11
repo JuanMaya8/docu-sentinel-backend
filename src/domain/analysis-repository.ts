@@ -69,24 +69,26 @@ export class BlobAnalysisRepository implements AnalysisRepository {
     return summary;
   }
 
-  async list(limit: number, offset: number): Promise<Page<AnalysisSummary>> {
-    const all = [...(await this.load()).values()].sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
-    const items = all.slice(offset, offset + limit).map(({ columns: _c, sensitivity: _s, mlMode: _m, baselineId: _b, ...summary }) => summary);
+  async list(limit: number, offset: number, ownerId?: string): Promise<Page<AnalysisSummary>> {
+    const all = [...(await this.load()).values()]
+      .filter((d) => !ownerId || d.ownerId === ownerId)
+      .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
+    const items = all.slice(offset, offset + limit).map(({ columns: _c, sensitivity: _s, mlMode: _m, baselineId: _b, ownerId: _o, ...summary }) => summary);
     return { items, total: all.length };
   }
 
-  async get(id: string): Promise<AnalysisDetail> {
+  async get(id: string, ownerId?: string): Promise<AnalysisDetail> {
     const d = (await this.load()).get(id);
-    if (!d) throw new NotFoundError('un análisis', id);
+    if (!d || (ownerId && d.ownerId !== ownerId)) throw new NotFoundError('un análisis', id);
     return d;
   }
 
-  async fileName(id: string): Promise<string> {
-    return (await this.get(id)).fileName;
+  async fileName(id: string, ownerId?: string): Promise<string> {
+    return (await this.get(id, ownerId)).fileName;
   }
 
-  async allFindings(id: string): Promise<FindingDto[]> {
-    await this.get(id);
+  async allFindings(id: string, ownerId?: string): Promise<FindingDto[]> {
+    await this.get(id, ownerId);
     const hit = this.cache.get(id);
     if (hit) {
       this.cache.delete(id);
