@@ -30,6 +30,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     corsOrigins: (env.CORS_ORIGINS ?? 'http://localhost:3000').split(',').map((s) => s.trim()).filter(Boolean),
     bodyLimitMb: int(env.BODY_LIMIT_MB, 100),
     throttleLimit: int(env.THROTTLE_LIMIT, 300),
-    version: env.npm_package_version ?? '0.1.0',
+    retentionDays: int(env.RETENTION_DAYS, 0),
+    retentionIntervalMs: int(env.RETENTION_INTERVAL_MS, 3_600_000),
+    version: env.npm_package_version ?? '0.2.0',
   };
 }
