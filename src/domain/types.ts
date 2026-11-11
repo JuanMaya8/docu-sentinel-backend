@@ -113,10 +113,13 @@ export interface CreateBaselineDto {
   schemaSignature?: string;
   contamination?: number;
   seed?: number;
+  thresholdFloor?: number;
 }
 
 export interface ScoreBaselineDto {
   matrix: Array<Array<number | null>>;
+  /** when sent, must equal the baseline's signature (fast schema compatibility check) */
+  schemaSignature?: string;
   explain?: 'flagged' | 'all' | 'none';
   topK?: number;
 }
