@@ -99,10 +99,9 @@ No aplica a este repo (es una API). El patrón del sistema —SSG + CSR + SSR po
 
 | Estado | Elemento |
 |---|---|
-| ✅ **Verificado** (28 pruebas ejecutadas; `tsc` sin errores en `src/domain` y pruebas; HTTP real contra un servidor local para el cliente de IA) | Todo `src/domain`: validación, historial (memoria y disco, 100 000 hallazgos), filtros/orden/paginación, CSV, líneas base (con IA simulada), errores, configuración |
-| ⚠️ **Escrito pero NO ejecutado** (en el entorno de creación el registro de npm estaba bloqueado: no se pudo instalar NestJS) | Capa Nest: `main.ts`, módulos, controladores, guard, filtro, gateway, Swagger, `Dockerfile`, `docker-compose.yml`, y `test/http/app.e2e.test.ts` |
-| ⚠️ **Riesgos conocidos al primer arranque** | Swagger infiere tipos con metadatos de decoradores (solo funciona con `nest build`/`tsc`, no con `tsx`); `app.useBodyParser` requiere Nest ≥ 10.2; el contrato con `socket.io-client` del frontend |
-| ❌ **No hecho** | PostgreSQL, autenticación de usuarios (hoy solo `X-API-Key`), reentrenar una línea base existente, paginación por cursor, métricas/observabilidad, retención automática de reportes viejos |
+| ✅ **Verificado** — `npm test` (32) + `npm run test:http` (8) + `tsc` limpio + `nest build` | Dominio completo (validación, historial en memoria y disco con 100 000 hallazgos, filtros, CSV, líneas base, retención, `thresholdFloor`, `SCHEMA_MISMATCH`) y capa Nest real (controladores, guard, filtro, gateway socket.io, Swagger en `/docs`, `X-Request-ID`) |
+| ✅ **Verificado — integración real** | `node dist/main.js` + `docu-sentinel-ai` (uvicorn): entrenar → puntuar (coherencia y valores extremos) → `SCHEMA_MISMATCH` → borrar; E2E con Playwright desde el frontend (guardar reporte, línea base, `/reportes` con «En vivo») |
+| ❌ **No hecho** | PostgreSQL, autenticación de usuarios (hoy solo `X-API-Key`), reentrenar una línea base existente, paginación por cursor, `/metrics` Prometheus, compresión de respuestas |
 
 ## Limitaciones conocidas
 * El almacenamiento en archivos es para una sola instancia. Con varias réplicas hay que pasar a una base de datos (la interfaz ya existe).
