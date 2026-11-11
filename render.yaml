@@ -1,0 +1,84 @@
+# Render Blueprint: PostgreSQL + docu-sentinel-ai + docu-sentinel-backend (see DEPLOY.md, step by step).
+# Render → New → Blueprint → pick this repo. Values marked `sync: false` are asked for when the Blueprint is created.
+# Free plan notes: services sleep after ~15 min idle (first request takes ~1 min) and the free database expires after
+# 30 days unless upgraded. Everything is stored in PostgreSQL, so the ephemeral disk of free instances is not a problem.
+
+databases:
+  - name: docu-sentinel-db
+    plan: free
+    databaseName: docu_sentinel
+    user: docu_sentinel
+
+envVarGroups:
+  - name: docu-sentinel-shared
+    envVars:
+      # shared secret between backend and AI (the backend sends it as X-API-Key)
+      - key: AI_API_KEY
+        generateValue: true
+
+services:
+  # ------------------------------------------------------------------ AI (FastAPI) — repo docu-sentinel-ai
+  - type: web
+    name: docu-sentinel-ai
+    runtime: docker
+    repo: https://github.com/JuanMaya8/docu-sentinel-ai
+    branch: main
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - fromGroup: docu-sentinel-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docu-sentinel-db
+          property: connectionString
+      - key: MODEL_TTL_DAYS
+        value: "180"
+      - key: TRUST_PROXY
+        value: "1"
+      - key: LOG_LEVEL
+        value: INFO
+
+  # ------------------------------------------------------------------ Backend (NestJS) — this repo
+  - type: web
+    name: docu-sentinel-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - fromGroup: docu-sentinel-shared
+      - key: DATABASE_URL
+        fromDatabase:
+          name: docu-sentinel-db
+          property: connectionString
+      # public URL of the AI service, e.g. https://docu-sentinel-ai.onrender.com (shown on its Render page)
+      - key: AI_URL
+        sync: false
+      # the Vercel domain(s) of the frontend, comma separated, e.g.
+      # https://docu-sentinel.vercel.app,https://docu-sentinel-*-juanmaya8s-projects.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
+      # user accounts: every report and baseline belongs to a user
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_TTL_HOURS
+        value: "168"
+      - key: ALLOW_REGISTRATION
+        value: "true"
+      - key: RETENTION_DAYS
+        value: "180"
+      # optional: protects GET /metrics with "Authorization: Bearer <token>"
+      - key: METRICS_TOKEN
+        generateValue: true
+      # optional: notify a URL when a saved report has critical findings
+      - key: WEBHOOK_URL
+        sync: false
+      - key: AI_TIMEOUT_MS
+        value: "120000"
+      - key: NODE_ENV
+        value: production
