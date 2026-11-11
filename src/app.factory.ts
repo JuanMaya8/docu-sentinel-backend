@@ -1,10 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import compression from 'compression';
+import type { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import type { AppConfig, FetchLike } from './domain';
+import { originAllowed, type AppConfig, type FetchLike, type Metrics } from './domain';
 import { requestId } from './http/request-id.middleware';
+import { TOKENS } from './tokens';
 
 /** Builds (but does not start) the Nest app. Used by main.ts and by the e2e tests. */
 export interface BuildOptions {
