@@ -38,17 +38,18 @@ export class BaselineService {
     return run;
   }
 
-  async list(): Promise<BaselineDto[]> {
-    return [...(await this.all())].sort((a, b) => (a.trainedAt < b.trainedAt ? 1 : -1));
+  /** `ownerId` given => only that user's baselines (authentication enabled); omitted => all. */
+  async list(ownerId?: string): Promise<BaselineDto[]> {
+    return [...(await this.all())].filter((b) => !ownerId || b.ownerId === ownerId).sort((a, b) => (a.trainedAt < b.trainedAt ? 1 : -1));
   }
 
-  async get(id: string): Promise<BaselineDto> {
+  async get(id: string, ownerId?: string): Promise<BaselineDto> {
     const b = (await this.all()).find((x) => x.id === id);
-    if (!b) throw new NotFoundError('una línea base', id);
+    if (!b || (ownerId && b.ownerId !== ownerId)) throw new NotFoundError('una línea base', id);
     return b;
   }
 
-  async create(input: unknown): Promise<BaselineDto> {
+  async create(input: unknown, ownerId?: string): Promise<BaselineDto> {
     const dto = validateCreateBaseline(input);
     const info = await this.ai.train({
       name: dto.name, columns: dto.columns, kinds: dto.kinds, matrix: dto.matrix,
