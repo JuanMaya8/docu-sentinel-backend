@@ -47,23 +47,32 @@ export class AnalysesController {
   @ApiQuery({ name: 'type', required: false }) @ApiQuery({ name: 'field', required: false }) @ApiQuery({ name: 'q', required: false })
   @ApiQuery({ name: 'sort', required: false, enum: ['score:desc', 'score:asc', 'record:asc', 'record:desc', 'risk:desc'] })
   @ApiQuery({ name: 'limit', required: false }) @ApiQuery({ name: 'offset', required: false })
-  findings(@Param('id') id: string, @Query() query: Record<string, unknown>): Promise<Page<FindingDto>> {
-    return this.analyses.findings(id, query);
+  findings(@Param('id') id: string, @Query() query: Record<string, unknown>, @Owner() owner?: string): Promise<Page<FindingDto>> {
+    return this.analyses.findings(id, query, owner);
   }
 
   @Get(':id/export.csv')
   @ApiOperation({ summary: 'CSV (UTF-8 con BOM): Registro, Tipo de anomalía, Nivel de riesgo, Campo afectado, Explicación' })
-  async exportCsv(@Param('id') id: string, @Res() res: Response): Promise<void> {
-    const { fileName, csv } = await this.analyses.exportCsv(id);
+  async exportCsv(@Param('id') id: string, @Res() res: Response, @Owner() owner?: string): Promise<void> {
+    const { fileName, csv } = await this.analyses.exportCsv(id, owner);
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
     res.send(csv);
   }
 
+  @Get(':id/export.json')
+  @ApiOperation({ summary: 'JSON con el resumen del reporte y todos sus hallazgos' })
+  async exportJson(@Param('id') id: string, @Res() res: Response, @Owner() owner?: string): Promise<void> {
+    const { fileName, json } = await this.analyses.exportJson(id, owner);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    res.send(json);
+  }
+
   @Delete(':id')
   @HttpCode(204)
   @ApiOperation({ summary: 'Elimina un reporte' })
-  async remove(@Param('id') id: string): Promise<void> {
-    await this.analyses.remove(id);
+  async remove(@Param('id') id: string, @Owner() owner?: string): Promise<void> {
+    await this.analyses.remove(id, owner);
   }
 }
