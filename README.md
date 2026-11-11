@@ -19,16 +19,22 @@ Requisitos: **Node 18.18+** (recomendado 20). La IA (`docu-sentinel-ai`) es opci
 
 ```bash
 npm install
-cp .env.example .env          # y expórtalo o usa un gestor de .env; las variables están documentadas dentro
+```
+
+En **PowerShell (Windows)**:
+```powershell
+Copy-Item .env.example .env   # las variables están documentadas dentro
 npm run start:dev             # http://localhost:3001/api/v1   ·   Swagger: http://localhost:3001/docs
 ```
+
+En macOS/Linux, copia `.env.example` como `.env` con `cp .env.example .env` y ejecuta `npm run start:dev`.
 
 | Comando | Qué hace |
 |---|---|
 | `npm run start:dev` | Desarrollo con recarga |
 | `npm run build && npm start` | Producción (`dist/main.js`) |
-| `npm test` | **28 pruebas del dominio** (validación, repositorio, líneas base, cliente de IA con HTTP real) con `tsx --test` |
-| `npm run test:http` | Pruebas HTTP/WebSocket (supertest + socket.io-client) contra la app real y una IA falsa |
+| `npm test` | **32 pruebas del dominio** (validación, repositorio, retención, líneas base, cliente de IA con HTTP real) con `tsx --test` |
+| `npm run test:http` | **8 pruebas HTTP/WebSocket** (supertest + socket.io-client) contra la app Nest real y una IA falsa |
 | `npm run typecheck` | `tsc --noEmit` |
 | `docker compose up --build` | Backend + IA juntos (espera `../docu-sentinel-ai` junto a este repo) |
 
