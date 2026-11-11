@@ -4,10 +4,13 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { CoreModule } from './core.module';
 import type { AppConfig, FetchLike } from './domain';
 import { ApiKeyGuard } from './http/api-key.guard';
+import { AuthGuard } from './http/auth.guard';
 import { AllExceptionsFilter } from './http/exceptions.filter';
 import { AnalysesController } from './modules/analyses.controller';
+import { AuthController } from './modules/auth.controller';
 import { BaselinesController } from './modules/baselines.controller';
 import { HealthController } from './modules/health.controller';
+import { MetricsController } from './modules/metrics.controller';
 import { RealtimeGateway } from './modules/realtime.gateway';
 import { RetentionScheduler } from './modules/retention.scheduler';
 
