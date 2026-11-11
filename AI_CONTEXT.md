@@ -15,7 +15,7 @@
 * Líneas base: `POST /baselines/:id/retrain` (mismas columnas; `version` + 1; borra el modelo anterior).
 * `GET /analyses/:id/export.json`, `GET /metrics` (`domain/metrics.ts`, fuera del prefijo), gzip (`compression`),
   webhook (`domain/webhook.ts`), CORS con comodín de una etiqueta (`originAllowed` en `config.ts`), `trust proxy`.
-* Despliegue: `render.yaml` (Blueprint con PostgreSQL + IA + backend) y `DEPLOY.md`. CI con servicio `postgres`.
+* Despliegue: `render.yaml` (Blueprint con IA + backend en Render; base de datos en Neon) y `DEPLOY.md`. CI con servicio `postgres`.
 
 ## 0. Actualización (v0.2.0)
 
