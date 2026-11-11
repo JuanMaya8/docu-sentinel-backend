@@ -21,14 +21,25 @@ export interface BuildOptions {
 export async function buildApp(config: AppConfig, options: BuildOptions = {}): Promise<NestExpressApplication> {
   const { fetchImpl, swagger = true, logRequests = true } = options;
   const app = await NestFactory.create<NestExpressApplication>(AppModule.register(config, fetchImpl), { logger: ['error', 'warn', 'log'] });
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api/v1', { exclude: ['metrics'] });
+  app.set('trust proxy', 1); // Render / Vercel / any reverse proxy: real client IP for throttling and logs
   app.use(requestId({ logRequests }));
+  const metrics = app.get<Metrics>(TOKENS.METRICS);
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const started = process.hrtime.bigint();
+    res.on('finish', () => {
+      const route = req.route?.path ? `${req.baseUrl ?? ''}${req.route.path as string}` : 'unmatched';
+      metrics.observeRequest(req.method, route, res.statusCode, Number(process.hrtime.bigint() - started) / 1e9);
+    });
+    next();
+  });
   app.use(helmet());
+  app.use(compression({ threshold: 1024 }));
   app.useBodyParser('json', { limit: `${config.bodyLimitMb}mb` });
   app.enableCors({
-    origin: config.corsOrigins,
+    origin: (origin: string | undefined, cb: (err: Error | null, ok?: boolean) => void) => cb(null, originAllowed(origin, config.corsOrigins)),
     methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'X-API-Key', 'X-Request-ID'],
+    allowedHeaders: ['Content-Type', 'X-API-Key', 'X-Request-ID', 'Authorization'],
     exposedHeaders: ['Content-Disposition', 'X-Request-ID'],
   });
   app.enableShutdownHooks();
