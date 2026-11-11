@@ -132,6 +132,7 @@ export interface AiModelInfo {
   kinds: FeatureKind[];
   rows: number;
   threshold: number;
+  threshold_floor?: number;
   contamination: number;
   seed: number;
   trained_at: string;
