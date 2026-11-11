@@ -53,6 +53,7 @@ export class BaselineService {
     const info = await this.ai.train({
       name: dto.name, columns: dto.columns, kinds: dto.kinds, matrix: dto.matrix,
       schema_signature: dto.schemaSignature, contamination: dto.contamination, seed: dto.seed,
+      threshold_floor: dto.thresholdFloor,
     });
     const baseline: BaselineDto = {
       id: `bl_${randomBytes(6).toString('hex')}`,
