@@ -116,8 +116,8 @@ No aplica a este repo (es una API). El patrón del sistema —SSG + CSR + SSR po
   de cuentas, no miles.
 
 ## Despliegue (Render + Vercel)
-[`render.yaml`](render.yaml) es un **Blueprint** que crea PostgreSQL, la IA y este backend; [`DEPLOY.md`](DEPLOY.md)
-explica los pasos (incluido Vercel para el frontend y CORS). Localmente, `docker compose up --build` levanta
+[`render.yaml`](render.yaml) es un **Blueprint** que crea la IA y este backend en Render; la base de datos es **Neon**
+(PostgreSQL) y el frontend va en **Vercel**. [`DEPLOY.md`](DEPLOY.md) explica los pasos (Neon, Render, Vercel y CORS). Localmente, `docker compose up --build` levanta
 PostgreSQL + IA + backend. Variables documentadas en `.env.example`.
 
 
