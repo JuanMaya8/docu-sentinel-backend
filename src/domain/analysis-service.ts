@@ -50,7 +50,7 @@ export class AnalysisService {
     const removed: string[] = [];
     for (const id of await this.repo.idsCreatedBefore(cutoff)) {
       try {
-        await this.remove(id);
+        await this.remove(id); // retention ignores ownership on purpose
         removed.push(id);
       } catch {
         /* already gone (concurrent delete): ignore */
