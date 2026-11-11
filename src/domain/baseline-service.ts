@@ -76,21 +76,64 @@ export class BaselineService {
       await this.ai.deleteModel(info.model_id).catch(() => undefined); // do not leave an orphan model
       throw e;
     }
-    this.events.publish('baseline.trained', baseline);
+    this.events.publish('baseline.trained', baseline, ownerId);
     return baseline;
   }
 
-  async remove(id: string): Promise<void> {
-    const b = await this.get(id);
+  /**
+   * Retrains an existing baseline with new data (same columns, same order): a new model is trained in the AI, the
+   * baseline keeps its id and name, `version` goes up by one and the previous model is deleted (best effort).
+   */
+  async retrain(id: string, input: unknown, ownerId?: string): Promise<BaselineDto> {
+    const current = await this.get(id, ownerId);
+    const raw = (typeof input === 'object' && input !== null && !Array.isArray(input) ? input : {}) as Record<string, unknown>;
+    const sent = Array.isArray(raw.columns) ? (raw.columns as unknown[]) : current.columns;
+    if (sent.length !== current.columns.length || sent.some((c, i) => c !== current.columns[i])) {
+      throw new DomainError(422, 'SCHEMA_MISMATCH', 'Para reentrenar, los datos deben tener las mismas columnas (y en el mismo orden) que la línea base. Crea una línea base nueva para otro formato.');
+    }
+    const dto = validateCreateBaseline({ ...raw, name: current.name, columns: current.columns, kinds: raw.kinds ?? current.kinds });
+    const info = await this.ai.train({
+      name: current.name, columns: current.columns, kinds: dto.kinds, matrix: dto.matrix,
+      schema_signature: current.schemaSignature, contamination: dto.contamination, seed: dto.seed,
+      threshold_floor: dto.thresholdFloor ?? current.thresholdFloor,
+    });
+    let updated!: BaselineDto;
+    try {
+      await this.mutate(async (list) => {
+        const at = list.findIndex((x) => x.id === id);
+        if (at < 0) throw new NotFoundError('una línea base', id);
+        updated = {
+          ...list[at],
+          aiModelId: info.model_id,
+          kinds: info.kinds,
+          rows: info.rows,
+          threshold: info.threshold,
+          trainedAt: info.trained_at,
+          ...(info.threshold_floor !== undefined ? { thresholdFloor: info.threshold_floor } : {}),
+          version: (list[at].version ?? 1) + 1,
+        };
+        list[at] = updated;
+      });
+    } catch (e) {
+      await this.ai.deleteModel(info.model_id).catch(() => undefined);
+      throw e;
+    }
+    await this.ai.deleteModel(current.aiModelId).catch(() => undefined);
+    this.events.publish('baseline.trained', updated, updated.ownerId);
+    return updated;
+  }
+
+  async remove(id: string, ownerId?: string): Promise<void> {
+    const b = await this.get(id, ownerId);
     await this.mutate(async (list) => {
       list.splice(list.findIndex((x) => x.id === id), 1);
     });
     await this.ai.deleteModel(b.aiModelId).catch(() => undefined); // best effort: the metadata is already gone
-    this.events.publish('baseline.deleted', { id });
+    this.events.publish('baseline.deleted', { id }, b.ownerId);
   }
 
-  async score(id: string, input: unknown): Promise<AiScoreResponse> {
-    const b = await this.get(id);
+  async score(id: string, input: unknown, ownerId?: string): Promise<AiScoreResponse> {
+    const b = await this.get(id, ownerId);
     const dto = validateScoreBaseline(input, b.columns.length);
     // checked BEFORE calling the AI: a different feature layout would give meaningless scores
     if (dto.schemaSignature && b.schemaSignature && dto.schemaSignature !== b.schemaSignature) {
