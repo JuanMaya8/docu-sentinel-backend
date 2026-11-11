@@ -33,4 +33,20 @@ export class AnalysisService {
     await this.repo.remove(id);
     this.events.publish('analysis.deleted', { id });
   }
+
+  /** Retention: deletes the analyses older than `days` days (relative to `now`). Returns the removed ids. */
+  async purgeOlderThan(days: number, now: Date = new Date()): Promise<string[]> {
+    if (!(days > 0)) return [];
+    const cutoff = new Date(now.getTime() - days * 86_400_000).toISOString();
+    const removed: string[] = [];
+    for (const id of await this.repo.idsCreatedBefore(cutoff)) {
+      try {
+        await this.remove(id);
+        removed.push(id);
+      } catch {
+        /* already gone (concurrent delete): ignore */
+      }
+    }
+    return removed;
+  }
 }
