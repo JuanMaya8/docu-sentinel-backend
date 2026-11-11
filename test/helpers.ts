@@ -37,7 +37,7 @@ export class FakeAi {
     if (this.failWith) return reply(this.failWith.status, this.failWith.body);
     if (init.method === 'POST' && path === '/v1/models') {
       const id = `mdl_${String(++this.n).padStart(12, '0')}`;
-      const info: AiModelInfo = { model_id: id, name: body.name, columns: body.columns, kinds: body.kinds ?? body.columns.map(() => 'numeric'), rows: body.matrix.length, threshold: 0.61, contamination: 0.01, seed: 42, trained_at: '2026-01-01T00:00:00Z', schema_signature: body.schema_signature ?? null, engine: 'fake' };
+      const info: AiModelInfo = { model_id: id, name: body.name, columns: body.columns, kinds: body.kinds ?? body.columns.map(() => 'numeric'), rows: body.matrix.length, threshold: Math.max(0.61, body.threshold_floor ?? 0), threshold_floor: body.threshold_floor ?? 0.55, contamination: 0.01, seed: 42, trained_at: '2026-01-01T00:00:00Z', schema_signature: body.schema_signature ?? null, engine: 'fake' };
       this.models.set(id, info);
       return reply(201, info);
     }
