@@ -47,6 +47,29 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     throttleLimit: int(env.THROTTLE_LIMIT, 300),
     retentionDays: int(env.RETENTION_DAYS, 0),
     retentionIntervalMs: int(env.RETENTION_INTERVAL_MS, 3_600_000),
-    version: env.npm_package_version ?? '0.2.0',
+    databaseUrl: env.DATABASE_URL || undefined,
+    databaseSsl: bool(env.DATABASE_SSL, false),
+    jwtSecret: env.JWT_SECRET || undefined,
+    jwtTtlHours: int(env.JWT_TTL_HOURS, 168),
+    allowRegistration: bool(env.ALLOW_REGISTRATION, true),
+    webhookUrl: env.WEBHOOK_URL || undefined,
+    webhookSecret: env.WEBHOOK_SECRET || undefined,
+    webhookMinRisk: (['low', 'medium', 'high', 'critical'] as const).find((r) => r === env.WEBHOOK_MIN_RISK) ?? 'critical',
+    metricsToken: env.METRICS_TOKEN || undefined,
+    version: env.npm_package_version ?? '0.3.0',
   };
+}
+
+/**
+ * CORS origin check. Entries are exact origins (`https://app.example.com`) or a single `*` wildcard in the host
+ * (`https://*.vercel.app`, handy for Vercel preview deployments). `*` alone allows any origin.
+ */
+export function originAllowed(origin: string | undefined, allowed: string[]): boolean {
+  if (!origin) return true; // same-origin / server-to-server requests send no Origin header
+  return allowed.some((rule) => {
+    if (rule === '*') return true;
+    if (!rule.includes('*')) return rule === origin;
+    const re = new RegExp('^' + rule.split('*').map((p) => p.replace(/[.+?^${}()|[\]\/]/g, '\$&')).join('[a-z0-9-]+') + '$', 'i');
+    return re.test(origin);
+  });
 }
