@@ -53,20 +53,20 @@ Nuevo en v0.2.0:
 
 **Prioridad alta**
 * [x] Ejecutar y corregir lo no verificado (sección 1).
-* [ ] **PostgreSQL**: implementar `AnalysisRepository` (y un `BaselineStore`) con tablas `analyses`, `findings` (índices por `analysis_id`, `risk`, `type`, `record_index`), y elegirla por variable `DATABASE_URL`. La interfaz y las pruebas de contrato ya existen: reutiliza `test/repository.test.ts` parametrizando el repositorio. Los filtros hoy se hacen en memoria (`queryFindings`): pasarlos a SQL.
-* [ ] **Autenticación y propiedad** de reportes (JWT/sesión; cada reporte con `ownerId`). Hoy solo `X-API-Key` global; `NEXT_PUBLIC_API_KEY` en el frontend queda expuesta en el navegador.
+* [x] **PostgreSQL** (v0.3.0) —: implementar `AnalysisRepository` (y un `BaselineStore`) con tablas `analyses`, `findings` (índices por `analysis_id`, `risk`, `type`, `record_index`), y elegirla por variable `DATABASE_URL`. La interfaz y las pruebas de contrato ya existen: reutiliza `test/repository.test.ts` parametrizando el repositorio. Los filtros hoy se hacen en memoria (`queryFindings`): pasarlos a SQL.
+* [x] **Autenticación y propiedad** (v0.3.0) — de reportes (JWT/sesión; cada reporte con `ownerId`). Hoy solo `X-API-Key` global; `NEXT_PUBLIC_API_KEY` en el frontend queda expuesta en el navegador.
 * [x] **Paridad con la IA**: `thresholdFloor` en `CreateBaselineDto`/`AiClient.train` y `docs/CONTRACT.md` (3 repos).
 
 **Prioridad media**
-* [ ] Reentrenar/actualizar una línea base (hoy se crea otra) y versionarlas.
+* [x] Reentrenar/actualizar una línea base y versionarlas (v0.3.0).
 * [x] Retención: borrar reportes con más de N días (`RETENTION_DAYS`).
 * [x] Validar compatibilidad de esquema al puntuar (`schemaSignature`) → `SCHEMA_MISMATCH` antes de llamar a la IA.
-* [x] *Request id* en logs, logs JSON. — [ ] Métricas (`/metrics` Prometheus).
-* [ ] Compresión de respuestas grandes (`compression`) y `ETag` en listados.
+* [x] *Request id* en logs, logs JSON. — [x] Métricas (`/metrics` Prometheus, v0.3.0).
+* [x] Compresión de respuestas grandes (`compression`); Express ya envía `ETag` débil en las respuestas JSON.
 
 **Prioridad baja**
-* [ ] Paginación por cursor; exportación a JSON/XLSX además de CSV.
-* [ ] Webhooks cuando un reporte tenga hallazgos críticos.
+* [ ] Paginación por cursor; exportación XLSX. — [x] Exportación JSON (v0.3.0).
+* [x] Webhooks cuando un reporte tenga hallazgos críticos (v0.3.0, `WEBHOOK_URL`).
 
 ## 3. Invariantes que no se deben romper
 1. `src/domain` **no importa Nest ni Express**. Toda regla de negocio nueva va ahí, con prueba en `test/*.test.ts`.
