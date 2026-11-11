@@ -113,3 +113,30 @@ test('socket.io /realtime pushes analysis.saved', async () => {
     socket.close();
   }
 });
+
+test('X-Request-ID is echoed when safe and created otherwise', async () => {
+  const echoed = await request(base).get(`${API}/health`).set('X-Request-ID', 'req-42').expect(200);
+  assert.equal(echoed.headers['x-request-id'], 'req-42');
+  const created = await request(base).get(`${API}/health`).set('X-Request-ID', 'no vale <script>').expect(200);
+  assert.match(created.headers['x-request-id'], /^[0-9a-f]{16}$/);
+});
+
+test('baselines over HTTP: thresholdFloor round-trip and 422 SCHEMA_MISMATCH', async () => {
+  const created = await request(base).post(`${API}/baselines`).set(KEY)
+    .send({ name: 'Firmada', columns: ['a', 'b'], matrix: matrix(30, 2), schemaSignature: 'sig-1', thresholdFloor: 0.6 }).expect(201);
+  assert.equal(created.body.thresholdFloor, 0.6);
+  const id = created.body.id as string;
+  const mismatch = await request(base).post(`${API}/baselines/${id}/score`).set(KEY).send({ matrix: matrix(2, 2), schemaSignature: 'sig-2' }).expect(422);
+  assert.deepEqual([mismatch.body.statusCode, mismatch.body.code], [422, 'SCHEMA_MISMATCH']);
+  await request(base).post(`${API}/baselines/${id}/score`).set(KEY).send({ matrix: matrix(2, 2), schemaSignature: 'sig-1' }).expect(200);
+  await request(base).delete(`${API}/baselines/${id}`).set(KEY).expect(204);
+});
+
+test('retention scheduler purges old analyses through the domain service', async () => {
+  const { RetentionScheduler } = await import('../../src/modules/retention.scheduler');
+  const scheduler = app.get(RetentionScheduler);
+  const saved = await request(base).post(`${API}/analyses`).set(KEY).send(saveBody({ fileName: 'retencion.csv' })).expect(201);
+  // retention is disabled in this app (RETENTION_DAYS unset) => nothing is removed
+  assert.deepEqual(await scheduler.runOnce(new Date(Date.now() + 365 * 86_400_000)), []);
+  await request(base).get(`${API}/analyses/${saved.body.id}`).expect(200);
+});
