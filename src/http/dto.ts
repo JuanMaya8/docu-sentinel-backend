@@ -47,6 +47,25 @@ export class CreateBaselineDoc {
   @ApiPropertyOptional({ minimum: 0.5, maximum: 0.99, description: 'Puntaje mínimo para marcar una fila (el frontend usa 0,65/0,60/0,55 según la sensibilidad)' }) thresholdFloor?: number;
 }
 
+export class RetrainBaselineDoc {
+  @ApiProperty({ description: 'Filas × columnas (mismas columnas y orden que la línea base)', example: [[3, 120.5], [2, null]] }) matrix!: Array<Array<number | null>>;
+  @ApiPropertyOptional({ type: [String], description: 'Si se envían, deben ser idénticas a las de la línea base' }) columns?: string[];
+  @ApiPropertyOptional({ minimum: 0.0001, maximum: 0.25 }) contamination?: number;
+  @ApiPropertyOptional({ minimum: 0.5, maximum: 0.99 }) thresholdFloor?: number;
+  @ApiPropertyOptional() seed?: number;
+}
+
+export class RegisterDoc {
+  @ApiProperty({ example: 'ana@empresa.co' }) email!: string;
+  @ApiProperty({ minLength: 8, example: 'una-clave-larga' }) password!: string;
+  @ApiPropertyOptional({ example: 'Ana' }) name?: string;
+}
+
+export class LoginDoc {
+  @ApiProperty({ example: 'ana@empresa.co' }) email!: string;
+  @ApiProperty({ example: 'una-clave-larga' }) password!: string;
+}
+
 export class ScoreBaselineDoc {
   @ApiProperty({ example: [[3, 120.5]] }) matrix!: Array<Array<number | null>>;
   @ApiPropertyOptional({ enum: ['flagged', 'all', 'none'] }) explain?: string;
