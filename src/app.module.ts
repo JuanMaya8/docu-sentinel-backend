@@ -20,6 +20,7 @@ export class AppModule {
       controllers: [HealthController, AnalysesController, BaselinesController],
       providers: [
         RealtimeGateway,
+        RetentionScheduler,
         { provide: APP_FILTER, useClass: AllExceptionsFilter },
         { provide: APP_GUARD, useClass: ThrottlerGuard },
         { provide: APP_GUARD, useClass: ApiKeyGuard },
