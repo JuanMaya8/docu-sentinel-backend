@@ -145,5 +145,18 @@ export interface AiScoreResponse {
   threshold: number;
   scores: number[];
   flags: boolean[];
-  contributions: Record<string, Array<{ column: string; field: string; kind: FeatureKind; value: number | null; median: number; deviation: number; message: string }>>;
+  contributions: Record<string, Array<AiContribution>>;
+}
+
+export interface AiContribution {
+  column: string;
+  field: string;
+  /** 'coherence' = the value does not fit what the other fields of the record predict */
+  kind: FeatureKind | 'coherence';
+  value: number | null;
+  median: number;
+  deviation: number;
+  /** only for kind 'coherence' */
+  expected?: number | null;
+  message: string;
 }
