@@ -16,5 +16,6 @@ RUN mkdir -p /data && chown node:node /data
 USER node
 VOLUME ["/data"]
 EXPOSE 3001
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://127.0.0.1:3001/api/v1/health || exit 1
+# PORT is injected by the platform (Render uses 10000); the healthcheck follows it
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- "http://127.0.0.1:${PORT:-3001}/api/v1/health" || exit 1
 CMD ["node", "dist/main.js"]
