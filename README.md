@@ -103,18 +103,22 @@ No aplica a este repo (es una API). El patrón del sistema —SSG + CSR + SSR po
 
 | Estado | Elemento |
 |---|---|
-| ✅ **Verificado** — `npm test` (32) + `npm run test:http` (8) + `tsc` limpio + `nest build` | Dominio completo (validación, historial en memoria y disco con 100 000 hallazgos, filtros, CSV, líneas base, retención, `thresholdFloor`, `SCHEMA_MISMATCH`) y capa Nest real (controladores, guard, filtro, gateway socket.io, Swagger en `/docs`, `X-Request-ID`) |
+| ✅ **Verificado** — `npm test` (47) + `npm run test:http` (14) + `npm run test:pg` (17, PostgreSQL 16 real) + `tsc` + `nest build` | Dominio completo (validación, historial con 100 000 hallazgos en archivos **y** PostgreSQL con las mismas pruebas de contrato, filtros/búsqueda/orden en SQL, CSV/JSON, líneas base con reentrenamiento y versión, retención, usuarios scrypt + JWT, propiedad de datos, webhook firmado, métricas, CORS con comodín) y capa Nest real (auth guard, socket.io por usuario, `/metrics`, gzip, Swagger) |
 | ✅ **Verificado — integración real** | `node dist/main.js` + `docu-sentinel-ai` (uvicorn): entrenar → puntuar (coherencia y valores extremos) → `SCHEMA_MISMATCH` → borrar; E2E con Playwright desde el frontend (guardar reporte, línea base, `/reportes` con «En vivo») |
-| ❌ **No hecho** | PostgreSQL, autenticación de usuarios (hoy solo `X-API-Key`), reentrenar una línea base existente, paginación por cursor, `/metrics` Prometheus, compresión de respuestas |
+| ✅ **Verificado — Docker como en Render** | imagen con `PORT=10000`, `DATABASE_URL`, `JWT_SECRET`: health `auth:true, store:postgres`, registro de usuario |
+| ❌ **No hecho** | Paginación por cursor (hay `limit/offset`), exportación XLSX, recuperación de contraseña por correo, roles/administración de usuarios |
 
 ## Limitaciones conocidas
 * El almacenamiento en archivos es para una sola instancia. Con varias réplicas hay que pasar a una base de datos (la interfaz ya existe).
 * Cada reporte se carga completo en memoria al consultarlo (hay una caché de 3); con 100 000 hallazgos son ~25 MB.
-* Sin usuarios: todos los reportes son visibles para quien llegue a la API.
+* Sin `JWT_SECRET` no hay usuarios: todos los reportes son visibles para quien llegue a la API (actívalo en producción).
+* Usuarios y líneas base se guardan como un documento JSON (tabla `ds_kv` en PostgreSQL): pensado para decenas o cientos
+  de cuentas, no miles.
 
-## Despliegue (más adelante)
-Imagen Docker lista (`Dockerfile`, usuario no-root, volumen `/data`). Variables: `PORT`, `API_KEY`, `AI_URL`, `AI_API_KEY`, `DATA_DIR` (volumen persistente), `CORS_ORIGINS` (dominio del frontend), `BODY_LIMIT_MB`, `THROTTLE_LIMIT`, `RETENTION_DAYS`, `RETENTION_INTERVAL_MS`.
-Opciones simples: Render, Railway, Fly.io o Cloud Run con un volumen (o migrar a Postgres gestionado). Despliega primero la IA y apunta `AI_URL` a ella.
+## Despliegue (Render + Vercel)
+[`render.yaml`](render.yaml) es un **Blueprint** que crea PostgreSQL, la IA y este backend; [`DEPLOY.md`](DEPLOY.md)
+explica los pasos (incluido Vercel para el frontend y CORS). Localmente, `docker compose up --build` levanta
+PostgreSQL + IA + backend. Variables documentadas en `.env.example`.
 
 ## Nombre de repositorio sugerido
 `docu-sentinel-backend`
