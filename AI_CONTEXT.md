@@ -38,16 +38,16 @@ Nuevo en v0.2.0:
 ## 2. Qué falta para llegar al 100 %
 
 **Prioridad alta**
-* [ ] Ejecutar y corregir lo no verificado (sección 1).
+* [x] Ejecutar y corregir lo no verificado (sección 1).
 * [ ] **PostgreSQL**: implementar `AnalysisRepository` (y un `BaselineStore`) con tablas `analyses`, `findings` (índices por `analysis_id`, `risk`, `type`, `record_index`), y elegirla por variable `DATABASE_URL`. La interfaz y las pruebas de contrato ya existen: reutiliza `test/repository.test.ts` parametrizando el repositorio. Los filtros hoy se hacen en memoria (`queryFindings`): pasarlos a SQL.
 * [ ] **Autenticación y propiedad** de reportes (JWT/sesión; cada reporte con `ownerId`). Hoy solo `X-API-Key` global; `NEXT_PUBLIC_API_KEY` en el frontend queda expuesta en el navegador.
-* [ ] **Paridad con la IA**: el frontend ya usa `threshold_floor`, modelo de coherencia y escala log. Cuando la IA los soporte, añadir `thresholdFloor` a `CreateBaselineDto`/`AiClient.train` y a `docs/CONTRACT.md` en los **3 repos**.
+* [x] **Paridad con la IA**: `thresholdFloor` en `CreateBaselineDto`/`AiClient.train` y `docs/CONTRACT.md` (3 repos).
 
 **Prioridad media**
 * [ ] Reentrenar/actualizar una línea base (hoy se crea otra) y versionarlas.
-* [ ] Retención: borrar reportes con más de N días (tarea programada con `@nestjs/schedule`).
-* [ ] Validar compatibilidad de esquema al puntuar (`schemaSignature`) y devolver `SCHEMA_MISMATCH` con un mensaje útil antes de llamar a la IA.
-* [ ] Métricas (`/metrics` Prometheus), *request id* en logs, logs JSON.
+* [x] Retención: borrar reportes con más de N días (`RETENTION_DAYS`).
+* [x] Validar compatibilidad de esquema al puntuar (`schemaSignature`) → `SCHEMA_MISMATCH` antes de llamar a la IA.
+* [x] *Request id* en logs, logs JSON. — [ ] Métricas (`/metrics` Prometheus).
 * [ ] Compresión de respuestas grandes (`compression`) y `ETag` en listados.
 
 **Prioridad baja**
