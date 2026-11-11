@@ -119,6 +119,35 @@ test('AiClient over real HTTP: success, API key header, 5xx, timeout, connection
   await assert.rejects(() => new AiClient({ baseUrl: 'http://127.0.0.1:1' }).health(), AiUnavailableError);
 });
 
+test('baseline: thresholdFloor is validated, sent to the AI and stored', async () => {
+  const { ai, svc } = setup();
+  const b = await svc.create({ ...body(), thresholdFloor: 0.65 });
+  assert.equal(ai.calls[0].body.threshold_floor, 0.65);
+  assert.equal(b.thresholdFloor, 0.65);
+  assert.equal(b.threshold, 0.65);
+  await assert.rejects(() => svc.create({ ...body(), thresholdFloor: 0.3 }), ValidationError);
+  await assert.rejects(() => svc.create({ ...body(), thresholdFloor: 1 }), ValidationError);
+  const plain = await svc.create(body('sin piso'));
+  assert.equal(ai.calls.at(-1)!.body.threshold_floor, undefined);
+  assert.equal(plain.thresholdFloor, 0.55); // the AI default is reported back
+});
+
+test('baseline: a different schemaSignature is rejected with 422 SCHEMA_MISMATCH before calling the AI', async () => {
+  const { ai, svc } = setup();
+  const b = await svc.create(body());
+  const before = ai.calls.length;
+  await assert.rejects(
+    () => svc.score(b.id, { matrix: matrix(2, 2), schemaSignature: 'otra-firma' }),
+    (e: any) => e instanceof DomainError && e.status === 422 && e.code === 'SCHEMA_MISMATCH' && /mismas columnas/.test(e.message),
+  );
+  assert.equal(ai.calls.length, before, 'the AI must not be called');
+  const ok = await svc.score(b.id, { matrix: matrix(2, 2), schemaSignature: 'abc123' });
+  assert.equal(ok.flags.length, 2);
+  const noSig = await svc.create({ ...body('sin firma'), schemaSignature: undefined });
+  const r = await svc.score(noSig.id, { matrix: matrix(2, 2), schemaSignature: 'cualquiera' });
+  assert.equal(r.flags.length, 2, 'baselines without a signature accept any signature');
+});
+
 test('config: defaults and overrides', () => {
   const d = loadConfig({});
   assert.deepEqual([d.port, d.aiUrl, d.dataDir, d.corsOrigins, d.bodyLimitMb], [3001, 'http://localhost:8000', './data', ['http://localhost:3000'], 100]);
