@@ -23,7 +23,7 @@ const API = '/api/v1';
 
 before(async () => {
   const config = { ...loadConfig({ DATA_DIR: dir, AI_URL: 'http://ai.test', CORS_ORIGINS: 'http://localhost:3000', API_KEY: 'k-test', THROTTLE_LIMIT: '1000' }) };
-  app = await buildApp(config, { fetchImpl: ai.fetch, swagger: false });
+  app = await buildApp(config, { fetchImpl: ai.fetch, swagger: false, logRequests: false });
   await app.listen(0, '127.0.0.1');
   base = await app.getUrl();
 });
