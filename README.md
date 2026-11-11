@@ -37,7 +37,8 @@ En macOS/Linux, copia `.env.example` como `.env` con `cp .env.example .env` y ej
 | `npm run start:dev` | Desarrollo con recarga |
 | `npm run build && npm start` | Producción (`dist/main.js`) |
 | `npm test` | **32 pruebas del dominio** (validación, repositorio, retención, líneas base, cliente de IA con HTTP real) con `tsx --test` |
-| `npm run test:http` | **8 pruebas HTTP/WebSocket** (supertest + socket.io-client) contra la app Nest real y una IA falsa |
+| `npm run test:http` | **14 pruebas HTTP/WebSocket** (supertest + socket.io-client) contra la app Nest real y una IA falsa, con y sin cuentas |
+| `npm run test:pg` | Contrato del repositorio + e2e con cuentas sobre **PostgreSQL real** (`TEST_DATABASE_URL=postgres://…`) |
 | `npm run typecheck` | `tsc --noEmit` |
 | `docker compose up --build` | Backend + IA juntos (espera `../docu-sentinel-ai` junto a este repo) |
 
